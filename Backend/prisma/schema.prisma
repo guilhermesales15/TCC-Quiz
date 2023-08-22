@@ -9,3 +9,57 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+//Criando uma migration no banco, comando: yarn prisma migrate dev
+model UserAluno{
+  id String @id @default(uuid())
+  name String
+  email String
+  password String
+  birthDate DateTime
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("userAluno")
+}
+
+model UserProf{
+  id String @id @default(uuid())
+  name String
+  email String
+  password String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("userProf")
+}
+
+model Pergunta {
+  id      Int       @id @default(autoincrement())
+  texto   String
+  nivel   Nivel     @relation(fields: [nivelId], references: [id])
+  nivelId Int
+  opcoes  Opcao[]
+  banner String
+
+  @@map("pergunta")
+}
+
+model Nivel {
+  id     Int       @id @default(autoincrement())
+  nome   String
+  perguntas Pergunta[]
+
+  @@map("nivel")
+}
+
+model Opcao {
+  id      Int       @id @default(autoincrement())
+  texto   String
+  correta Boolean
+  pergunta Pergunta  @relation(fields: [perguntaId], references: [id])
+  perguntaId Int
+
+  @@map("opcao")
+}

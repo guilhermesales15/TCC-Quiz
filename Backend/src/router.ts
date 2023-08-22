@@ -1,10 +1,11 @@
-import {Router, Request, Response} from 'express';
+import {Router} from 'express';
+
+import { CreateProfController } from './controllers/user/prof/CreateProfController';
 
 const router = Router()
 
-router.get('/test', (req: Request, res: Response) =>{
-  return res.json({nome: "Guilherme"})
+//rota cadastro Usuario-Professor
+router.post('/userProf', new CreateProfController().handle)
 
-})
 
 export{router};
