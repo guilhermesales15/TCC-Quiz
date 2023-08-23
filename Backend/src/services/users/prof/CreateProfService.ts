@@ -1,3 +1,6 @@
+import prismaClient from "../../../prisma";
+
+
 interface userRequest{
     name: string;
     email: string;
@@ -6,7 +9,37 @@ interface userRequest{
 
 class CreateProfService {
     async execute({name, email, password}: userRequest){
-        return {ok: "true"}
+
+        //Verificando se o email está sendo enviado
+        if(!email){
+            throw new Error("email inválido")
+        }
+        //verificando se o email já foi cadastrado
+       const userAlreadyExist = await prismaClient.userProf.findFirst({
+        where: {
+            email: email
+        }
+       })
+
+       if(userAlreadyExist){
+        throw new Error("Email já foi cadastrado")
+       }
+
+       //criando o usuario-professor e 
+       const userProf = await prismaClient.userProf.create({
+        data:{
+            name: name,
+            email: email,
+            password: password
+        },select:{
+            id:true,
+            email: true,
+            name: true,
+        }
+
+       })
+
+       return userProf;
     }
 }
 

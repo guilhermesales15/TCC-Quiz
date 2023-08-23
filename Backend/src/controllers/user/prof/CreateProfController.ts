@@ -12,7 +12,9 @@ class CreateProfController{
             name,
             email,
             password
-        })
+        }
+        
+        )
 
         return res.json(user)
     }
