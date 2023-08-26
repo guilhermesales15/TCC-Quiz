@@ -1,5 +1,5 @@
 import prismaClient from "../../../prisma";
-
+import { hash } from 'bcryptjs'
 
 interface userRequest{
     name: string;
@@ -25,6 +25,8 @@ class CreateAlunoService {
        if(userAlreadyExist){
         throw new Error("Email já foi cadastrado")
        }
+
+       const passwordHash = await hash(password, 8)
        //
        const [day, month, year] = birthDate.split("/");
        const birthDateISO = `${year}-${month}-${day}`;
@@ -34,7 +36,7 @@ class CreateAlunoService {
         data:{
             name: name,
             email: email,
-            password: password,
+            password: passwordHash,
             birthDate: new Date(birthDateISO),
         },select:{
             id:true,

@@ -1,5 +1,5 @@
 import prismaClient from "../../../prisma";
-
+import { hash } from 'bcryptjs'
 
 interface userRequest{
     name: string;
@@ -25,12 +25,14 @@ class CreateProfService {
         throw new Error("Email já foi cadastrado")
        }
 
+       const passwordHash = await hash(password, 8)
+
        //criando o usuario-professor e 
        const userProf = await prismaClient.userProf.create({
         data:{
             name: name,
             email: email,
-            password: password
+            password: passwordHash
         },select:{
             id:true,
             email: true,
