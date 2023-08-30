@@ -1,5 +1,6 @@
 import prismaClient from "../../../prisma";
 import { compare } from "bcryptjs";
+import {sign } from 'jsonwebtoken';
 
 interface AuthRequest {
   email: string;
@@ -28,15 +29,39 @@ class AuthAlunoService {
           throw new Error("Senha incorreta ou não existe");
         }
 
+        
+      const token = sign(
+        {
+          name: userAluno.name,
+          email: userAluno.email
+        },
+        process.env.JWT_SECRET,
+        {
+          subject: userAluno.id,
+          expiresIn: '30d'
+        }
+      )
+
+      return {
+        id: userAluno.id,
+        name: userAluno.name,
+        email: userAluno.email,
+        birthDate: userAluno.birthDate,
+        token: token
+      }
+
         // Caso tudo esteja certo, você pode retornar alguma indicação de sucesso
-        return "Autenticação bem-sucedida!";
+        
       } else {
         throw new Error("Usuário não possui senha");
       }
+
     } catch (error) {
       // Captura e lida com exceções
       throw new Error("Erro ao autenticar usuário");
     }
+   
+
   }
 }
 

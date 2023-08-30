@@ -1,5 +1,6 @@
 import prismaClient from "../../../prisma";
 import { compare } from "bcryptjs";
+import { sign } from "jsonwebtoken";
 
 interface AuthRequest {
   email: string;
@@ -29,7 +30,25 @@ class AuthProfService {
         }
 
         // Caso tudo esteja certo, você pode retornar alguma indicação de sucesso
-        return "Autenticação bem-sucedida!";
+        const token = sign(
+          {
+            name: userProf.name,
+            email: userProf.email
+          },
+          process.env.JWT_SECRET,
+          {
+            subject: userProf.id,
+            expiresIn: '30d'
+          }
+        )
+  
+        return {
+          id: userProf.id,
+          name: userProf.name,
+          email: userProf.email,
+          token: token
+        }
+  
       } else {
         throw new Error("Usuário não possui senha");
       }
