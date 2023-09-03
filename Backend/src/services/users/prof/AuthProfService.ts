@@ -29,7 +29,7 @@ class AuthProfService {
           throw new Error("Senha incorreta ou não existe");
         }
 
-        // Caso tudo esteja certo, você pode retornar alguma indicação de sucesso
+        // criando o token que será utilizado para acessar certas rotas
         const token = sign(
           {
             name: userProf.name,

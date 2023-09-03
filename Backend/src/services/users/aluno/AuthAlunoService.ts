@@ -29,7 +29,7 @@ class AuthAlunoService {
           throw new Error("Senha incorreta ou não existe");
         }
 
-        
+        //criando o token que será utilizado para acessar certas rotas
       const token = sign(
         {
           name: userAluno.name,
@@ -46,7 +46,6 @@ class AuthAlunoService {
         id: userAluno.id,
         name: userAluno.name,
         email: userAluno.email,
-        birthDate: userAluno.birthDate,
         token: token
       }
 
