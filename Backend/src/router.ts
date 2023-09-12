@@ -5,6 +5,7 @@ import { CreateAlunoController } from './controllers/user/aluno/CreateAlunoContr
 import { AuthProfController } from './controllers/user/prof/AuthProfController';
 import { AuthAlunofController } from './controllers/user/aluno/AuthAlunoController';
 import { DetailProfController } from './controllers/user/prof/DetailProfController';
+import { DetailAlunoController } from './controllers/user/aluno/DetailAlunoController';
 
 import { Authenticated } from './middlewares/Authenticated';
 
@@ -19,6 +20,7 @@ router.post('/loginAluno', new AuthAlunofController().handle)
 
 //rota trazendo as informações do usuário
 router.get('/detailProf', Authenticated, new DetailProfController().handle)
+router.get('/detailAluno', Authenticated, new DetailAlunoController().handle)
 
 
 export{router};

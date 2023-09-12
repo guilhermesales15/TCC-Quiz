@@ -1,9 +1,9 @@
 import prismaClient from "../../../prisma";
 
-class DetailProfService{
+class DetailAlunoService{
     async execute (user_id: string){
 
-        const prof = await prismaClient.userProf.findFirst({
+        const aluno = await prismaClient.userAluno.findFirst({
             where:{
                 id: user_id
             },
@@ -13,8 +13,8 @@ class DetailProfService{
                 email: true
             }
         })
-        return prof
+        return aluno;
     }
 }
 
-export {DetailProfService};
+export {DetailAlunoService};

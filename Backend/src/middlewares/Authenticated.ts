@@ -22,6 +22,8 @@ export  function Authenticated(req: Request, res: Response,next: NextFunction){
             process.env.JWT_SECRET,
         ) as PayLoad;
 
+        req.user_id = sub
+
         return next();
 
     }catch(err){

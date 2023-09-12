@@ -5,9 +5,11 @@ class DetailProfController {
 
     async handle(req: Request, res: Response ){
 
+        const user_id = req.user_id
+
         const detailProfService = new DetailProfService();
 
-        const prof = await detailProfService.execute();
+        const prof = await detailProfService.execute(user_id);
 
         return res.json(prof);
 
