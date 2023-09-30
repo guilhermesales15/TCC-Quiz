@@ -1,12 +1,24 @@
-import React from "react"
+import React, { useContext } from "react";
+import { View, Text, Button } from "react-native";
+import { AuthContext } from "../../contexts/AuthContext";
 
-import { View,Text } from "react-native"
+export default function DashBoard() {
+  const { signOut } = useContext(AuthContext);
 
+  const handleSignOut = async () => {
+    console.log("Tentando fazer logout..."); // Mensagem de log para depuração
+    await signOut();
+    console.log("Logout concluído."); // Mensagem de log para depuração
+    // Redirecione ou atualize a interface do usuário após o logout, se necessário.
+  };
 
-export default function DashBoard (){
-    return (
-        <View>
-            <Text>Nada aqui ainda :)</Text>
-        </View>
-    )
+  return (
+    <View>
+      <Text>Nada aqui ainda :)</Text>
+      <Button
+        title="Sair"
+        onPress={handleSignOut}
+      />
+    </View>
+  );
 }

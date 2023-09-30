@@ -1,7 +1,25 @@
-import React from "react";
+import React, {useState, useContext} from "react";
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from "react-native";
 
+import { AuthContext } from "../../contexts/AuthContext";
+
+
 export default function SignIn(){
+
+    const {signIn} = useContext(AuthContext)
+
+    const [email, setEmail] = useState('')
+    const[password, setPassword] = useState('')
+    
+    async function handleLogin(){
+        if(email==='' || password ===''){
+            return;
+
+        }
+        await signIn({email, password})
+
+    }
+ 
     return(
         <View style={styles.container}>
             <Image style={styles.logo}
@@ -14,15 +32,21 @@ export default function SignIn(){
                     placeholder="Insira o seu email"
                     style={styles.input}
                     placeholderTextColor={'#f0f0f0'}
+                    value={email}
+                    onChangeText={setEmail}
+                 
                 />
 
                 <TextInput
                     placeholder="Insira a sua senha"
                     style={styles.input}
                     placeholderTextColor={'#f0f0f0'}
+                    value={password}
+                    onChangeText={setPassword}
+                    
                 />
 
-                <TouchableOpacity style= {styles.button}>
+                <TouchableOpacity style= {styles.button} onPress={handleLogin} >
                    <Text style={ styles.buttonText}>Go !!!</Text> 
                 </TouchableOpacity>
             </View>
@@ -41,7 +65,7 @@ const styles = StyleSheet.create({
     },
     logo:{
         marginBottom:18,
-        width: 300, 
+        width: 400, 
         height: 200, 
     },
     inputContainer:{
@@ -54,14 +78,14 @@ const styles = StyleSheet.create({
     input:{
         width: '95%',
         height: 40,
-        backgroundColor: '#00CED1',
+        backgroundColor: '#0a5c0a',
         marginBottom: 10,
         borderRadius: 4,
         paddingHorizontal:8,
         color: '#fff'
     }, 
     button:{
-        width: '95%',
+        width: '80%',
         height: 40,
         backgroundColor: '#32CD32',
         marginBottom: 10,
