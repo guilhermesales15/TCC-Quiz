@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import { FormEvent, useContext, useState } from 'react'
 
 import { Inter } from 'next/font/google'
 import styles from '@/styles/home.module.scss'
@@ -7,12 +8,31 @@ import styles from '@/styles/home.module.scss'
 import logoImg from '../../public/TDeam.gif'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { AuthContext } from '@/context/AuthContext'
 
 import Link from 'next/link'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const { signIn} = useContext(AuthContext);
+
+  const[email, setEmail ]= useState('');
+  const[password, setPassword ]= useState('');
+
+  const [loading, setLoading] = useState(false);
+
+  async function HandleLogin (event: FormEvent){
+    event.preventDefault();
+
+    let data = {
+      email,
+      password
+    }
+
+    await signIn(data);
+  }
+
   return (
    <>
    <Head>
@@ -23,19 +43,23 @@ export default function Home() {
     <Image className={styles.logo} src={logoImg} alt='Logo'/>
 
     <div className={styles.login}>
-      <form>
+      <form onSubmit={HandleLogin}>
         <Input
         placeholder='Insira o seu email'
         type='text'
+        value={email}
+        onChange={(e) =>setEmail(e.target.value)}
         />  
 
         <Input
         placeholder='Insira a sua senha'
         type='password'
+        value={password}
+        onChange={(e)=>setPassword(e.target.value)}
         />  
 
 
-        <Button type="submit" loading={false}>
+        <Button type="submit" loading={false} >
           Entrar
         </Button>
       </form>  
