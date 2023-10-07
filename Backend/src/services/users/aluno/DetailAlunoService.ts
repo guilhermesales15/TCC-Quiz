@@ -10,7 +10,8 @@ class DetailAlunoService{
             select:{
                 id: true,
                 name: true,
-                email: true
+                email: true,
+                birthDate: true
             }
         })
         return aluno;
