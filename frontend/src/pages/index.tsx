@@ -9,6 +9,7 @@ import logoImg from '../../public/TDeam.gif'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { AuthContext } from '@/context/AuthContext'
+import {toast} from 'react-toastify'
 
 import Link from 'next/link'
 
@@ -25,12 +26,21 @@ export default function Home() {
   async function HandleLogin (event: FormEvent){
     event.preventDefault();
 
+    if(email==''|| password=='' ){
+      toast.error("Email ou senha vazios")
+      return;
+    }
+
+    setLoading(true);
+
     let data = {
       email,
       password
     }
 
     await signIn(data);
+
+    setLoading(false)
   }
 
   return (
@@ -59,7 +69,7 @@ export default function Home() {
         />  
 
 
-        <Button type="submit" loading={false} >
+        <Button type="submit" loading={loading} >
           Entrar
         </Button>
       </form>  
