@@ -18,7 +18,7 @@ export default function Dashboard(){
          </Head>
 
          <Header/>
-        <h1 className={styles.welcome}>Bem vindo(a) {user.name}</h1>
+        <h1 className={styles.welcome}>Bem vindo(a) {user?.name}</h1>
 
        </>
     )
