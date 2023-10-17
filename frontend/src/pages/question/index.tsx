@@ -1,193 +1,155 @@
-import Head from "next/head";
-import { ChangeEvent, useState } from "react";
-import styles from './style.module.scss'
 
-import { canSSRAuth } from "@/utils/canSSRAuth";
-import Header from "@/components/ui/Header";
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import { setupAPIClient } from '@/services/api';
+import { canSSRAuth } from '@/utils/canSSRAuth';
+import styles from './style.module.scss';
 
-import {FiUpload} from 'react-icons/fi'
-
-import { setupAPIClient } from "@/services/api";
-import { GetServerSideProps } from 'next';
-
-type questionProps ={
-    id:number;
-    nome: string;
+interface NivelItem {
+  id: number;
+  nome: string;
 }
 
-interface nivelProps{
-    nivelList : questionProps[]
-} 
+interface CreateQuestionFormProps {
+  nivelList: NivelItem[];
+}
 
-export default function Question({ nivelList }: nivelProps) {
+export default function CreateQuestionForm({ nivelList }: CreateQuestionFormProps) {
+  const [description, setDescription] = useState('');
+  const [options, setOptions] = useState([
+    { texto: '', correta: false },
+    { texto: '', correta: false },
+    { texto: '', correta: false },
+    { texto: '', correta: false },
+  ]);
 
-    console.log(nivelList)
+  const [nivelId, setNivelId] = useState(nivelList.length > 0 ? nivelList[0].id : 1);
+
   const [avatarUrl, setAvatarUrl] = useState('');
-  const [imageAvatar, setImageAvatar] = useState<string | null>(null);
-  
+  const [imageAvatar, setImageAvatar] = useState<File | null>(null);
 
-  const [nivel, setNivel] = useState(nivelList ||[])
-  const [nivelSelected, setNivelSelected] = useState(0)
-
-  function handleFile(e: ChangeEvent<HTMLInputElement>) {
-    if (!e.target.files) {
-      return;
-    }
-
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
     const image = e.target.files[0];
-
-    if (!image) {
-      return;
-    }
-
+    if (!image) return;
     if (image.type === 'image/png' || image.type === 'image/jpeg') {
       setAvatarUrl(URL.createObjectURL(image));
-      setImageAvatar(URL.createObjectURL(image));
+      setImageAvatar(image);
     }
-  }
+  };
 
-  function handleChangeNivel(event: ChangeEvent<HTMLSelectElement>) {
-    const selectedValue = parseInt(event.target.value, 10);
-    setNivelSelected(selectedValue);
-  }
-  
-  
+  const handleAddOption = () => {
+    if (options.length < 4) {
+      setOptions([...options, { texto: '', correta: false }]);
+    }
+  };
+
+  const handleRemoveOption = (index: number) => {
+    const newOptions = [...options];
+    newOptions.splice(index, 1);
+    setOptions(newOptions);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const data = new FormData();
+      data.append('texto', description);
+      data.append('nivelId', nivelId.toString());
+      if (imageAvatar) {
+        data.append('imagem', imageAvatar);
+      }
+      options.forEach((option, index) => {
+        data.append(`item${index + 1}_texto`, option.texto);
+        data.append(`item${index + 1}_correta`, option.correta ? 'true' : 'false');
+      });
+    
+      const apiClient = setupAPIClient();
+      await apiClient.post('/pergunta', data).catch((error) => {
+        console.error('Error from server:', error);
+        toast.error('Erro ao cadastrar pergunta');
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Erro ao cadastrar pergunta');
+    }
+  };
 
   return (
-    <>
-      <Head>
-        <title>
-          Aventuras lógicas - Gerenciar Banco de Questões
-        </title>
-      </Head>
-
-      <Header />
-
-      <main className={styles.container}>
-        <h1>Novas perguntas</h1>
-
-        <form className={styles.form}>
-        <label className={styles.addFile}>
-                    <span>
-                        <FiUpload size={25} color='#fff'/>
-                    </span>
-                    <input type="file" accept="image/png, image/jpg" onChange={handleFile} />
-
-                    {avatarUrl&&(
-                           <img
-                           className={styles.preview}
-                           src={avatarUrl}
-                           alt="Foto ilustrativa"
-                           width={250}
-                           height={250}
-                           />
-                    )}
-
-                </label>
-
-                <select value={nivelSelected} onChange={handleChangeNivel}>
-                    {nivel.map((item,index) =>{
-                        return(
-                            <option key={item.id} value={index}>
-                                {item.nome}
-                            </option>
-                        )
-                    })}
-                </select>
-
-                <textarea
-                placeholder="Digite o enunciado da questão"
-                className={styles.input}
-                />
-
-               
-                <input type="text"
-                placeholder="Digite o primeiro Item"
-                className={styles.input}
-                />
-
-                <select>
-                    <option>
-                        op 1
-                    </option>
-
-                    <option>
-                        op 2
-                    </option>
-                </select>
-
-                <input type="text"
-                placeholder="Digite o segundo Item"
-                className={styles.input}
-                />
-
-                <select>
-                    <option>
-                        op 1
-                    </option>
-
-                    <option>
-                        op 2
-                    </option>
-                </select>
-
-                <input type="text"
-                placeholder="Digite o terceiro Item"
-                className={styles.input}
-                />
-
-                <select>
-                    <option>
-                        op 1
-                    </option>
-
-                    <option>
-                        op 2
-                    </option>
-                </select>
-
-                <input type="text"
-                placeholder="Digite o quarto Item"
-                className={styles.input}
-                />
-
-                <select>
-                    <option>
-                        op 1
-                    </option>
-
-                    <option>
-                        op 2
-                    </option>
-                </select>
-
-                <button className={styles.button}>
-                    cadastrar pergunta
-                </button>
-        </form>
-      </main>
-    </>
+    <form onSubmit={handleSubmit} className={styles.container}>
+      <div>
+        <label>Descrição da pergunta:</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className={styles.input}
+        />
+      </div>
+      <div>
+        <label>Imagem (opcional):</label>
+        <input type="file" accept="image/png, image/jpeg" onChange={handleFileChange} />
+        {avatarUrl && (
+          <img src={avatarUrl} alt="Imagem ilustrativa" width={150} height={150} />
+        )}
+      </div>
+      <div>
+        <label>Nível da pergunta:</label>
+        <select value={nivelId} onChange={(e) => setNivelId(Number(e.target.value))}>
+          {nivelList.map((nivel) => (
+            <option key={nivel.id} value={nivel.id}>
+              {nivel.nome}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label>Opções de resposta:</label>
+        {options.map((option, index) => (
+          <div key={index}>
+            <input
+              type="text"
+              placeholder={`Opção ${index + 1}`}
+              value={option.texto}
+              onChange={(e) => {
+                const newOptions = [...options];
+                newOptions[index].texto = e.target.value;
+                setOptions(newOptions);
+              }}
+            />
+            <input
+              type="checkbox"
+              checked={option.correta}
+              onChange={(e) => {
+                const newOptions = [...options];
+                newOptions[index].correta = e.target.checked;
+                setOptions(newOptions);
+              }}
+            />
+            <button type="button" onClick={() => handleRemoveOption(index)}>
+              Remover
+            </button>
+          </div>
+        ))}
+        {options.length < 4 && (
+          <button type="button" onClick={handleAddOption}>
+            Adicionar Opção
+          </button>
+        )}
+      </div>
+      <div>
+        <button type="submit">Cadastrar Pergunta</button>
+      </div>
+    </form>
   );
 }
 
-export const getServerSideProps: GetServerSideProps<{ nivelList: any }> = canSSRAuth(async (ctx) => {
+export const getServerSideProps = canSSRAuth(async (ctx) => {
   const apiClient = setupAPIClient(ctx);
-
-  try {
-    const response = await apiClient.get("/listNivel");
-
-    return {
-      props: {
-        nivelList: response.data
-      }
-    };
-  } catch (error) {
-    console.error("Erro ao buscar dados da API:", error);
-
-    return {
-      props: {
-        nivelList: undefined // Defina um valor padrão ou vazio, se necessário
-      }
-    };
-  }
+  const response = await apiClient.get('/listNivel');
+  return {
+    props: {
+      nivelList: response.data,
+    },
+  };
 });
