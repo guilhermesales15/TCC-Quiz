@@ -1,9 +1,12 @@
-
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { setupAPIClient } from '@/services/api';
 import { canSSRAuth } from '@/utils/canSSRAuth';
 import styles from './style.module.scss';
+import {FiPlus} from 'react-icons/fi'
+
+import Header from '@/components/ui/Header';
+import Head from 'next/head';
 
 interface NivelItem {
   id: number;
@@ -25,18 +28,7 @@ export default function CreateQuestionForm({ nivelList }: CreateQuestionFormProp
 
   const [nivelId, setNivelId] = useState(nivelList.length > 0 ? nivelList[0].id : 1);
 
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [imageAvatar, setImageAvatar] = useState<File | null>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    const image = e.target.files[0];
-    if (!image) return;
-    if (image.type === 'image/png' || image.type === 'image/jpeg') {
-      setAvatarUrl(URL.createObjectURL(image));
-      setImageAvatar(image);
-    }
-  };
+  
 
   const handleAddOption = () => {
     if (options.length < 4) {
@@ -54,47 +46,50 @@ export default function CreateQuestionForm({ nivelList }: CreateQuestionFormProp
     e.preventDefault();
 
     try {
-      const data = new FormData();
-      data.append('texto', description);
-      data.append('nivelId', nivelId.toString());
-      if (imageAvatar) {
-        data.append('imagem', imageAvatar);
-      }
-      options.forEach((option, index) => {
-        data.append(`item${index + 1}_texto`, option.texto);
-        data.append(`item${index + 1}_correta`, option.correta ? 'true' : 'false');
-      });
-    
+      const data = {
+        texto: description,
+        nivelId: nivelId,
+        opcoes: options,
+        banner: '' // Nome da imagem aqui, se necessário
+      };
+
       const apiClient = setupAPIClient();
-      await apiClient.post('/pergunta', data).catch((error) => {
-        console.error('Error from server:', error);
-        toast.error('Erro ao cadastrar pergunta');
-      });
+      await apiClient.post('/pergunta', data);
+
+      toast.success('Pergunta cadastrada com sucesso');
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error from server:', error);
       toast.error('Erro ao cadastrar pergunta');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.container}>
+
+    <>
+
+    <Head>
+      <title>
+        Aventuras Lógicas - Cadastro de Perguntas
+      </title>
+
+    </Head>
+
+    <Header/>
+    <main className={styles.container}>
+    <form onSubmit={handleSubmit} className={styles.form}>
+
+     
       <div>
-        <label>Descrição da pergunta:</label>
+        <h1>Descrição da pergunta:</h1>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className={styles.input}
         />
       </div>
+     
       <div>
-        <label>Imagem (opcional):</label>
-        <input type="file" accept="image/png, image/jpeg" onChange={handleFileChange} />
-        {avatarUrl && (
-          <img src={avatarUrl} alt="Imagem ilustrativa" width={150} height={150} />
-        )}
-      </div>
-      <div>
-        <label>Nível da pergunta:</label>
+        <h1>Nível da pergunta:</h1>
         <select value={nivelId} onChange={(e) => setNivelId(Number(e.target.value))}>
           {nivelList.map((nivel) => (
             <option key={nivel.id} value={nivel.id}>
@@ -103,14 +98,15 @@ export default function CreateQuestionForm({ nivelList }: CreateQuestionFormProp
           ))}
         </select>
       </div>
-      <div>
-        <label>Opções de resposta:</label>
+      <div >
+        <h1 >Opções de resposta:</h1>
         {options.map((option, index) => (
-          <div key={index}>
+          <div key={index} >
             <input
               type="text"
               placeholder={`Opção ${index + 1}`}
               value={option.texto}
+              className={styles.input}
               onChange={(e) => {
                 const newOptions = [...options];
                 newOptions[index].texto = e.target.value;
@@ -120,27 +116,31 @@ export default function CreateQuestionForm({ nivelList }: CreateQuestionFormProp
             <input
               type="checkbox"
               checked={option.correta}
+              className={styles.checkbox}
               onChange={(e) => {
                 const newOptions = [...options];
                 newOptions[index].correta = e.target.checked;
                 setOptions(newOptions);
               }}
             />
-            <button type="button" onClick={() => handleRemoveOption(index)}>
+            <button type="button"  className={styles.button} onClick={() => handleRemoveOption(index)}>
               Remover
             </button>
           </div>
         ))}
         {options.length < 4 && (
-          <button type="button" onClick={handleAddOption}>
-            Adicionar Opção
+          <button type="button"  className={styles.buttonPlus}  onClick={handleAddOption}>
+            <FiPlus color="#fff" size={24}/>
           </button>
         )}
       </div>
       <div>
-        <button type="submit">Cadastrar Pergunta</button>
+        <button type="submit" className={styles.buttonFinal}>Cadastrar Pergunta</button>
       </div>
     </form>
+
+    </main>
+    </>
   );
 }
 
