@@ -13,6 +13,7 @@ type AuthContextData = {
   signIn: (credentials: SignProps) => Promise<void>;
   signOut: () =>void;
   signUp: (credentials: SignUpProps)=>Promise<void>;
+  signUpAluno: (credentials: SignUpAlunoProps)=>Promise<void>;
 }
 
 type UserProps = {
@@ -26,10 +27,17 @@ type SignProps = {
   password: string;
 }
 
-type SignUpProps ={
+export type SignUpProps ={
   name :string ;
   email: string;
   password: string;
+}
+
+export type SignUpAlunoProps ={
+  name :string ;
+  email: string;
+  password: string;
+  birthDate: string;
 }
 
 type AuthProviderProps = {
@@ -131,8 +139,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  async function signUpAluno({name, email, password, birthDate}: SignUpAlunoProps){
+    try{
+      
+      const response = await api.post('/userAluno',{
+        name,
+        email,
+        password,
+        birthDate
+      })
+
+      toast.success('Cadastrado com sucesso');
+     
+
+      
+    }catch(err){
+      toast.error("erro ao cadastrar");
+      console.log(err)
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut, signUp }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut, signUp, signUpAluno }}>
       {children}
     </AuthContext.Provider>
   );
