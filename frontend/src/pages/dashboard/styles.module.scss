@@ -1,8 +1,80 @@
-.welcome{
-    color: var(--white);
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    justify-content: center; 
-    height: 100vh; 
+// .welcome{
+//     color: var(--white);
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center; 
+//     justify-content: center; 
+//     height: 100vh; 
+//   }
+
+.container{
+  max-width: 720px;
+  margin: 4rem auto;
+  padding: 0 2rem;
+
+  display: flex;
+  flex-direction: column;
+
+}
+
+.container h1{
+  color: var(--white);
+  padding-top: 1rem;
+}
+
+.container h2{
+  color: var(--white);
+  padding-top: 3rem;
+}
+
+.containerHeader{
+
+  display: flex;
+  flex-direction: row;
+
+  button{
+    background: transparent;
+    border: none;
+    padding-top: 3rem;
+    margin-left: 2rem;
   }
+}
+
+.listQuestions{
+  display: flex;
+  flex-direction: column;
+
+  margin: 1rem 0;
+
+}
+
+.questionItem{
+  display: flex;
+  flex-direction: row;
+  background-color: var(--InputGreen) ;
+  margin-bottom: 1rem;
+  align-items: center;
+  border-radius: 0.3rem;
+
+  button{
+    border: 0;
+    background: transparent;
+
+    font-size: 1.2rem;
+    color: var(--white);
+    height: 60px;
+    align-items: center;
+    display: flex;
+
+  }
+
+
+}
+
+.tag{
+  width: 9px;
+  background-color: var(--Black);
+  height: 60px;
+  border-radius: 4px 0 0 4px;
+  margin-right: 1rem;
+}

@@ -24,8 +24,8 @@ export default function Header(){
                         Cadastrar Aluno
                     </Link>
 
-                    <Link href={"/question"} className={styles.link}>
-                        Perguntas
+                    <Link href={"/addQuestion"} className={styles.link}>
+                        Adicionar Pergunta
                     </Link>
 
                     <button onClick={signOut}>
