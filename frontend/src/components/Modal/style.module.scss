@@ -1,0 +1,47 @@
+.container{
+
+    width:620px ;
+    color: var(--white);
+    
+
+
+    ul{
+        list-style-type: none
+    }
+}
+
+.container h2{
+    margin: 1rem 0;
+}
+
+.container h3{
+    margin: 1rem 0;
+}
+
+.correta {
+    color: #00FF00; 
+  }
+
+
+.containerItem{
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 0;
+}
+
+.opItem{
+
+    display: flex;
+    flex-direction: column;
+    margin: 0.8rem 0;
+    word-break: break-all;
+
+}
+
+.exButton{
+    margin-top: 1.5rem;
+}
+
+.closeModal{
+    margin-right:200px ;
+}

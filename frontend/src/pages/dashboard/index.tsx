@@ -5,95 +5,111 @@ import { AuthContext } from '@/context/AuthContext'
 import { useContext } from 'react'
 import styles from './styles.module.scss'
 import { setupAPIClient } from "@/services/api"
+import Modal from 'react-modal'     
+
+import { ModalPergunta } from "@/components/Modal"
 
 import Header from "@/components/ui/Header"
 import { FiRefreshCcw } from "react-icons/fi"
 
-
-interface Opcao {
+export interface Opcao {
+    correta: any
     id: number;
     texto: string;
-  }
+}
   
-  interface Nivel {
+interface Nivel {
     id: number;
     nome: string;
-  }
+}
   
-  interface Pergunta {
+export interface Pergunta {
     id: number;
     texto: string;
     nivel: Nivel;
     opcoes: Opcao[];
-    banner: string |null;
-  }
+    banner: string | null;
+}
 
-  export default function Dashboard({ perguntas }: { perguntas: Pergunta[] }){
-    const {user}= useContext(AuthContext);
+export default function Dashboard({ perguntas }: { perguntas: Pergunta[] }) {
+    const { user } = useContext(AuthContext);
 
-    const [listPergunta, setListPergunta] = useState(perguntas || [])
+    const [listPergunta, setListPergunta] = useState(perguntas || []);
 
-    function handleOpenModal(id: number){
-        alert("id da pergunta: " + id)
+    const [modalItem, setModalItem] = useState<Pergunta | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
+
+    function handleCloseModal() {
+        setModalVisible(false);
     }
 
-    return(
-       <>
-       <Head>
-        <title>
-        Aventuras Lógicas - Ambiente do professor    
-        </title>      
-         </Head>
+    function handleOpenModal(id: number) {
+        const foundPergunta = listPergunta.find(pergunta => pergunta.id === id);
+        if (foundPergunta) {
+            setModalItem(foundPergunta);
+            setModalVisible(true);
+        }
+    }
 
-         <Header/>
+    Modal.setAppElement('#__next');
 
-         <main className={styles.container}>
-         <h1>Bem vindo(a) {user?.name}</h1>
-            <div className={styles.containerHeader}>
-                
-                <h2> Perguntas Criadas</h2>
-                <button>
-                    <FiRefreshCcw size={20} color="#fff"/>
-                </button>
+    return (
+        <>
+            <Head>
+                <title>
+                    Aventuras Lógicas - Ambiente do professor
+                </title>
+            </Head>
 
-            </div>
+            <Header />
 
-            <article className={styles.listQuestions}>
+            <main className={styles.container}>
+                <h1>Bem vindo(a) {user?.name}</h1>
+                <div className={styles.containerHeader}>
+                    <h2> Perguntas Criadas</h2>
+                    <button>
+                        <FiRefreshCcw size={20} color="#fff" />
+                    </button>
+                </div>
 
-                {listPergunta.map(
-                    item =>(
+                <article className={styles.listQuestions}>
+
+                    {listPergunta.length === 0 &&(
+                        <h3 className={styles.SemPergunta}>Nenhuma Pergunta cadastrada ...</h3>
+
+                    )}
+
+                    {listPergunta.map(item => (
                         <section key={item.id} className={styles.questionItem}>
-                             <button onClick={()=>handleOpenModal(item.id)}>
+                            <button onClick={() => handleOpenModal(item.id)}>
                                 <div className={styles.tag}></div>
                                 <span>{item.texto}</span>
                             </button>
                         </section>
-                        
-                    )
+                    ))}
+                </article>
+            </main>
 
-                )}
-            </article>
-             
+            {modalItem && modalVisible && (
+    <ModalPergunta
+        isOpen={modalVisible}
+        handleClose={handleCloseModal}
+        pergunta={modalItem}
+    />
+)}
 
-
-         </main>
-        
-
-       </>
+           
+        </>
     )
 }
 
-export const getServerSideProps = canSSRAuth(async (ctx)=>{
-
+export const getServerSideProps = canSSRAuth(async (ctx) => {
     const apiClient = setupAPIClient(ctx);
+    const response = await apiClient.get('/listPergunta');
 
-    const response = await apiClient.get('/listPergunta')
-
-    // console.log(response.data)
-
-return{
-    props:{
-        perguntas: response.data
+    return {
+        props: {
+            perguntas: response.data
+        }
     }
-}
-})
+});
