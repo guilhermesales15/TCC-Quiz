@@ -41,6 +41,7 @@ export default function SignIn(){
                 <TextInput
                     placeholder="Insira a sua senha"
                     style={styles.input}
+                    secureTextEntry={true}
                     placeholderTextColor={'#f0f0f0'}
                     value={password}
                     onChangeText={setPassword}

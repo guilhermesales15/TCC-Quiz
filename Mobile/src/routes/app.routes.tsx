@@ -9,7 +9,10 @@ const Stack= createNativeStackNavigator();
 function AppRoutes(){
     return(
         <Stack.Navigator>
-            <Stack.Screen name="Dashboard" component={DashBoard}/>
+            <Stack.Screen name="Dashboard" 
+            component={DashBoard}
+            options={{headerShown: false}}
+            />
         </Stack.Navigator>
     )
 }
