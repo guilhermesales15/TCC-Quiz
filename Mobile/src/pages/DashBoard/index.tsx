@@ -1,50 +1,66 @@
 import React, { useContext } from "react";
-import { View,  SafeAreaView, TouchableOpacity, StyleSheet, Text} from "react-native";
+import {  SafeAreaView, TouchableOpacity, StyleSheet, Text} from "react-native";
 import { AuthContext } from "../../contexts/AuthContext";
 
 import {Feather} from '@expo/vector-icons'
+import { useNavigation } from "@react-navigation/native";
+
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { StackPramsList } from "../../routes/app.routes";
 
 export default function DashBoard() {
-  const {signOut, user} = useContext(AuthContext)
+  const { signOut, user } = useContext(AuthContext);
+  const navigation = useNavigation<NativeStackNavigationProp<StackPramsList>>();
+
+ async function EasyQuestion(){
+  navigation.navigate('EasyQuestionsScreen')
+ }
+
+ async function MediumQuestion(){
+  navigation.navigate('MediumQuestionsScreen')
+ }
+
+ async function HardQuestion(){
+  navigation.navigate('HardQuestionsScreen')
+ }
+
+ async function Pontos(){
+  navigation.navigate('Pontos')
+ }
 
   return (
-
-    
     <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={signOut} style={styles.logOut}>
-        <Feather name="log-out" size={30} color="white"/>
+        <Feather name="log-out" size={30} color="white" />
       </TouchableOpacity>
-      
 
       <Text style={styles.title}>
-        Bem vindo(a) {user? user.name: ''} !
+        Bem vindo(a) {user ? user.name : ''} !
       </Text>
 
       <Text style={styles.choose}>
         Escolha uma dificuldade :
       </Text>
 
-      <TouchableOpacity style={styles.facil}>
+      <TouchableOpacity style={styles.facil} onPress={EasyQuestion}>
         <Text style={styles.buttonText}>Fácil</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.medio}>
+      <TouchableOpacity style={styles.medio} onPress={MediumQuestion}>
         <Text style={styles.buttonText}>Médio</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.dificil}>
+      <TouchableOpacity style={styles.dificil} onPress={HardQuestion}>
         <Text style={styles.buttonText}>Difícil</Text>
       </TouchableOpacity>
 
-
-      <TouchableOpacity style={styles.pontos}>
-
+      <TouchableOpacity style={styles.pontos} onPress={Pontos}>
         <Text style={styles.buttonText}>Meus Pontos</Text>
       </TouchableOpacity>
-
     </SafeAreaView>
   );
 }
+
 
 
 const styles = StyleSheet.create({
