@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { api } from '../../../services/api';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import axios, { AxiosResponse } from 'axios';
 import { AntDesign } from '@expo/vector-icons'; 
+import { AuthContext } from '../../../contexts/AuthContext';
 
 interface Question {
   id: number;
@@ -18,10 +19,11 @@ interface Option {
   correta: boolean;
 }
 
-
 export default function EasyQuestionsScreen() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]); 
+  const  {user } = useContext(AuthContext);
 
   useEffect(() => {
     openQuestion();
@@ -35,6 +37,29 @@ export default function EasyQuestionsScreen() {
     } catch (error) {
       console.error('Erro ao buscar as perguntas', error);
     }
+  }
+
+  async function handleOptionSelect(option: Option) {
+    if (option.correta) {
+      // Verifique se a pergunta já foi respondida
+      if (!answeredQuestions.includes(questions[currentQuestionIndex].id)) {
+        // Adicione a pergunta à lista de perguntas respondidas
+        setAnsweredQuestions([...answeredQuestions, questions[currentQuestionIndex].id]);
+
+        try {
+          const userId = user?.id; 
+          const scoreType = "pointEasy"; 
+          const newScore = 1; 
+
+          const response = await api.put('/score', { userId, scoreType, newScore });
+        } catch (error) {
+          console.error('Erro ao atualizar a pontuação', error);
+        }
+      }
+    }
+
+    // Vá para a próxima pergunta
+    goToNextQuestion();
   }
 
   function goToNextQuestion() {
@@ -53,19 +78,23 @@ export default function EasyQuestionsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Fácil</Text>
+      
 
       <View style={styles.containerQuestion}>
         <Text style={styles.questionText}>{currentQuestion?.texto}</Text>
         {currentQuestion?.opcoes.map((option) => (
-          <TouchableOpacity style={styles.button} key={option.id}>
+          <TouchableOpacity
+            style={styles.button}
+            key={option.id}
+            onPress={() => handleOptionSelect(option)}
+            disabled={answeredQuestions.includes(currentQuestion.id)} // Desabilite a pergunta se já foi respondida
+          >
             <Text style={styles.buttonText}>{option.texto}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
       <View style={styles.navigationButtons}>
-
         <TouchableOpacity
           style={[styles.button, styles.navigationButton]}
           onPress={goToPreviousQuestion}
@@ -73,7 +102,6 @@ export default function EasyQuestionsScreen() {
         >
           <AntDesign name="banckward" size={24} color="#fff" />
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.button, styles.navigationButton]}
           onPress={goToNextQuestion}
@@ -96,13 +124,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1E90FF'
-  },
-  title: {
-    fontSize: 25,
-    fontWeight: "bold",
-    color: '#fff',
-    marginTop: 20,
-    marginLeft: 175
   },
   questionText: {
     color: '#fff',

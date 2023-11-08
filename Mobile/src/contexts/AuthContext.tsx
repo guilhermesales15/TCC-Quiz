@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../services/api";
 
 type AuthContextData = {
-  user: UserProps | null; // Altere o tipo para UserProps | null
+  user: UserProps | null;
   isAuthenticated: boolean;
   signIn: (credential: SignInProps) => Promise<void>;
   loadingAuth: boolean;
@@ -16,6 +16,9 @@ type UserProps = {
   name: string;
   email: string;
   token: string;
+  pointEasy: number; // Novos campos de pontuação
+  pointMedium: number;
+  pointHard: number;
 };
 
 type AuthProviderProps = {
@@ -30,12 +33,11 @@ type SignInProps = {
 export const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<UserProps | null>(null); // Inicialize com null
-
+  const [user, setUser] = useState<UserProps | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const isAuthenticated = !!user?.token; // Verifique se o token está presente
+  const isAuthenticated = !!user?.token;
 
   useEffect(() => {
     async function getUser() {
@@ -50,6 +52,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
           name: hasUser.name,
           email: hasUser.email,
           token: hasUser.token,
+          pointEasy: hasUser.pointEasy,
+          pointMedium: hasUser.pointMedium,
+          pointHard: hasUser.pointHard,
         });
       }
 
@@ -68,13 +73,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         password,
       });
 
-      const { id, name, token } = response.data;
+      const { id, name, token, pointEasy, pointMedium, pointHard } = response.data; // Certifique-se de obter esses campos do response.data
 
-      const data = {
-        ...response.data,
-      };
-
-      await AsyncStorage.setItem("chave", JSON.stringify(data));
+      await AsyncStorage.setItem("chave", JSON.stringify(response.data)); // Salve os dados completos no armazenamento
 
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
@@ -83,18 +84,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         name,
         token,
         email,
+        pointEasy,
+        pointMedium,
+        pointHard,
       });
 
       setLoadingAuth(false);
     } catch (err) {
-      console.log("erro: ", err);
+      console.log("Erro: ", err);
       setLoadingAuth(false);
     }
   }
 
   async function signOut() {
     await AsyncStorage.clear();
-    setUser(null); // Defina o usuário como null no logout
+    setUser(null);
   }
 
   return (
