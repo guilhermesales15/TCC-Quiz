@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, Alert } from 'react-native';
 import { api } from '../../../services/api';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import axios, { AxiosResponse } from 'axios';
@@ -19,11 +19,11 @@ interface Option {
   correta: boolean;
 }
 
-export default function HardQuestionsScreen() {
+export default function EasyQuestionsScreen() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]); 
-  const  {user } = useContext(AuthContext);
+  const  { user } = useContext(AuthContext);
 
   useEffect(() => {
     openQuestion();
@@ -40,27 +40,36 @@ export default function HardQuestionsScreen() {
   }
 
   async function handleOptionSelect(option: Option) {
-    if (option.correta) {
-      // Verifique se a pergunta já foi respondida
-      if (!answeredQuestions.includes(questions[currentQuestionIndex].id)) {
-        // Adicione a pergunta à lista de perguntas respondidas
-        setAnsweredQuestions([...answeredQuestions, questions[currentQuestionIndex].id]);
-
+    if (!answeredQuestions.includes(questions[currentQuestionIndex].id)) {
+      setAnsweredQuestions([...answeredQuestions, questions[currentQuestionIndex].id]);
+  
+      if (option.correta) {
         try {
-          const userId = user?.id; 
-          const scoreType = "pointHard"; 
-          const newScore = 1; 
-
+          const userId = user?.id;
+          const scoreType = "pointHard";
+          const newScore = 1;
+  
           const response = await api.put('/score', { userId, scoreType, newScore });
+        
         } catch (error) {
           console.error('Erro ao atualizar a pontuação', error);
         }
       }
     }
-
-    // Vá para a próxima pergunta
+  
     goToNextQuestion();
   }
+  
+
+  useEffect(() => {
+    if (answeredQuestions.length === questions.length && questions.length > 0) {
+      Alert.alert(
+        'Todas as perguntas respondidas',
+        'Você respondeu todas as perguntas. Verifique a sua pontuação em Meus Pontos.',
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+      );
+    }
+  }, [answeredQuestions, questions]);
 
   function goToNextQuestion() {
     if (currentQuestionIndex < questions.length - 1) {
@@ -78,8 +87,6 @@ export default function HardQuestionsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      
-
       <View style={styles.containerQuestion}>
         <Text style={styles.questionText}>{currentQuestion?.texto}</Text>
         {currentQuestion?.opcoes.map((option) => (
@@ -87,7 +94,7 @@ export default function HardQuestionsScreen() {
             style={styles.button}
             key={option.id}
             onPress={() => handleOptionSelect(option)}
-            disabled={answeredQuestions.includes(currentQuestion.id)} // Desabilite a pergunta se já foi respondida
+            disabled={answeredQuestions.includes(currentQuestion.id)}
           >
             <Text style={styles.buttonText}>{option.texto}</Text>
           </TouchableOpacity>
