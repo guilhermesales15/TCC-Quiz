@@ -1,14 +1,18 @@
-
-import { PrismaClient, Pergunta, Nivel, Opcao } from '@prisma/client';
+import { PrismaClient, Pergunta, Opcao } from '@prisma/client';
 
 class PerguntaService {
- private prisma: PrismaClient;
+  private prisma: PrismaClient;
 
- constructor() {
+  constructor() {
     this.prisma = new PrismaClient();
- }
+  }
 
- async createPergunta(data: { texto: string, nivelId: number, opcoes: Opcao[], banner: string }): Promise<Pergunta> {
+  async createPergunta(data: {
+    texto: string;
+    nivelId: number;
+    opcoes: Opcao[];
+    banner: string;
+  }): Promise<Pergunta> {
     const { texto, nivelId, opcoes, banner } = data;
 
     const pergunta = await this.prisma.pergunta.create({
@@ -20,12 +24,12 @@ class PerguntaService {
         opcoes: {
           create: opcoes,
         },
-        banner,
+        banner, 
       },
     });
 
     return pergunta;
- }
+  }
 }
 
-export {PerguntaService};
+export { PerguntaService };

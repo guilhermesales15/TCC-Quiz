@@ -11,7 +11,10 @@ class DetailAlunoService{
                 id: true,
                 name: true,
                 email: true,
-                birthDate: true
+                birthDate: true,
+                pointEasy: true,
+                pointMedium: true,
+                pointHard: true,
             }
         })
         return aluno;

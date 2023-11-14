@@ -30,8 +30,8 @@ class CreateAlunoService {
        //
        const [day, month, year] = birthDate.split("/");
        const birthDateISO = `${year}-${month}-${day}`;
+       
 
-       //criando o usuario-professor e 
        const userProf = await prismaClient.userAluno.create({
         data:{
             name: name,

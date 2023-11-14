@@ -20,7 +20,9 @@ model UserAluno{
   birthDate DateTime
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
-
+  pointEasy Int @default(0)
+  pointMedium Int @default(0)
+  pointHard Int @default(0)
   @@map("userAluno")
 }
 
