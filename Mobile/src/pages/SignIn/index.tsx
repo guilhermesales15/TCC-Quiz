@@ -1,5 +1,5 @@
 import React, {useState, useContext} from "react";
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity,ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity,ActivityIndicator, ToastAndroid } from "react-native";
 
 import { AuthContext } from "../../contexts/AuthContext";
 
@@ -10,10 +10,17 @@ export default function SignIn(){
 
     const [email, setEmail] = useState('')
     const[password, setPassword] = useState('')
+
+    function showToast() {
+        ToastAndroid.show('Email/Senhas estão vazios !!!', ToastAndroid.SHORT);
+      }
+    
     
     async function handleLogin(){
         if(email==='' || password ===''){
+            showToast()
             return;
+            
 
         }
 

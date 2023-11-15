@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { SafeAreaView, Alert } from 'react-native';
+import { SafeAreaView, ToastAndroid } from 'react-native';
 import { api } from '../../../services/api';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import axios, { AxiosResponse } from 'axios';
+import{ AxiosResponse } from 'axios';
 import { AntDesign } from '@expo/vector-icons'; 
 import { AuthContext } from '../../../contexts/AuthContext';
 
@@ -39,6 +39,10 @@ export default function EasyQuestionsScreen() {
     }
   }
 
+  function showToast() {
+    ToastAndroid.showWithGravity('Você respondeu todas as perguntas. Verifique a sua pontuação em Meus Pontos.', ToastAndroid.TOP, ToastAndroid.LONG);
+  }
+
   async function handleOptionSelect(option: Option) {
     if (!answeredQuestions.includes(questions[currentQuestionIndex].id)) {
       setAnsweredQuestions([...answeredQuestions, questions[currentQuestionIndex].id]);
@@ -63,11 +67,8 @@ export default function EasyQuestionsScreen() {
 
   useEffect(() => {
     if (answeredQuestions.length === questions.length && questions.length > 0) {
-      Alert.alert(
-        'Todas as perguntas respondidas',
-        'Você respondeu todas as perguntas. Verifique a sua pontuação em Meus Pontos.',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
-      );
+      
+        showToast()
     }
   }, [answeredQuestions, questions]);
 

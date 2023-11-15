@@ -1,6 +1,7 @@
 import React, { useState, createContext, ReactNode, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../services/api";
+import {  ToastAndroid } from "react-native";
 
 type AuthContextData = {
   user: UserProps | null;
@@ -16,7 +17,7 @@ type UserProps = {
   name: string;
   email: string;
   token: string;
-  pointEasy: number; // Novos campos de pontuação
+  pointEasy: number; 
   pointMedium: number;
   pointHard: number;
 };
@@ -38,6 +39,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   const isAuthenticated = !!user?.token;
+
+
+  function showToast() {
+    ToastAndroid.show('Email/Senhas estão incorretos !!!', ToastAndroid.SHORT);
+  }
 
   useEffect(() => {
     async function getUser() {
@@ -73,7 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         password,
       });
 
-      const { id, name, token, pointEasy, pointMedium, pointHard } = response.data; // Certifique-se de obter esses campos do response.data
+      const { id, name, token, pointEasy, pointMedium, pointHard } = response.data; 
 
       await AsyncStorage.setItem("chave", JSON.stringify(response.data)); // Salve os dados completos no armazenamento
 
@@ -91,7 +97,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       setLoadingAuth(false);
     } catch (err) {
-      console.log("Erro: ", err);
+      showToast()
       setLoadingAuth(false);
     }
   }
