@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import { useState, FormEvent, useContext } from 'react'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/home.module.scss'

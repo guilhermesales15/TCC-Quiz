@@ -2,7 +2,7 @@ import { setupAPIClient } from "@/services/api";
 import Modal from "react-modal";
 import styles from "./style.module.scss";
 import { FiX } from "react-icons/fi";
-import { FaTrash, FaPencilAlt } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
 import { Pergunta, Opcao } from "@/pages/dashboard";
 
 interface ModalPerguntaProps {
@@ -34,6 +34,7 @@ export function ModalPergunta({ isOpen, handleClose, pergunta }: ModalPerguntaPr
       console.error('Erro ao excluir a pergunta', error);
     }
   };
+
   const customStyles = {
     content: {
       top: "50%",
@@ -61,30 +62,42 @@ export function ModalPergunta({ isOpen, handleClose, pergunta }: ModalPerguntaPr
 
       <div className={styles.container}>
         <h2>Detalhes da pergunta:</h2>
-        <h3>Enunciado da pergunta:</h3>
-        <span className={styles.texto}>{pergunta.texto}</span>
-        <div className={styles.containerItem}>
-          <h3>Dificuldade:</h3>
-          <span>{pergunta.nivel.nome}</span>
-          
-          <h3>Opções:</h3>
-          <ul>
-  {pergunta.opcoes.map((opcao: Opcao) => (
-    <li
-      className={`${styles.opItem} ${opcao.correta ? styles.correta : ''}`}
-      key={opcao.id}
-    >
-      {opcao.texto}
-      <button style={{ background: 'transparent', border: 0 }}>
-        <FaPencilAlt size={15} color="#FFF" />
-      </button>
-    </li>
-  ))}
-</ul>
-          <button className={styles.exButton} onClick={handleDeletePergunta} style={{ background: 'transparent', border: 0 }} >
-            <FaTrash size={35} color="#FFF" />
+
+        <div className={styles.enunciado}>
+          <h3>Enunciado da pergunta:</h3>
+          <span className={styles.texto}>{pergunta.texto}</span>
+          <button style={{ background: 'transparent', border: 0 }}>
+            
           </button>
         </div>
+        
+        <div className={styles.dificuldade}>
+          <h3>Dificuldade:</h3>
+
+          <span >{pergunta.nivel.nome}</span>
+
+          <button style={{ background: 'transparent', border: 0 }}>
+          
+          </button>
+
+        </div>
+        <h3>Opções:</h3>
+        <ul>
+          {pergunta.opcoes.map((opcao: Opcao) => (
+            <li
+              className={`${styles.opItem} ${opcao.correta ? styles.correta : ''}`}
+              key={opcao.id}
+            >
+              {opcao.texto}
+              <button style={{ background: 'transparent', border: 0 }}>
+               
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button className={styles.exButton} onClick={handleDeletePergunta} style={{ background: 'transparent', border: 0 }} >
+          <FaTrash size={35} color="#FFF" />
+        </button>
       </div>
     </Modal>
   );

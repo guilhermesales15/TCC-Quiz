@@ -135,7 +135,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       
     }catch(err){
-      toast.error("erro ao cadastrar");
+      toast.error("Email já cadastrado");
     }
   }
 
@@ -154,7 +154,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       
     }catch(err){
-      toast.error("erro ao cadastrar");
+      toast.error("Email já cadastrado");
       console.log(err)
     }
   }

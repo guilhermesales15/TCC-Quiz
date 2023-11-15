@@ -53,6 +53,13 @@ export default function Dashboard({ perguntas }: { perguntas: Pergunta[] }) {
 
     Modal.setAppElement('#__next');
 
+    async function handleRefreshOrder(){
+        const apiClient = setupAPIClient();
+
+        const response = await apiClient.get('/listPergunta')
+        setListPergunta(response.data)
+    }
+
     return (
         <>
             <Head>
@@ -67,7 +74,7 @@ export default function Dashboard({ perguntas }: { perguntas: Pergunta[] }) {
                 <h1>Bem vindo(a) {user?.name}</h1>
                 <div className={styles.containerHeader}>
                     <h2> Perguntas Criadas</h2>
-                    <button>
+                    <button onClick={handleRefreshOrder}>
                         <FiRefreshCcw size={20} color="#fff" />
                     </button>
                 </div>
